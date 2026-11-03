@@ -309,8 +309,9 @@ PRD/stories/synthesis/plan/flow/ordinary implementation Sol medium; architecture
 Sol high; visual design Terra medium. Targeted code discovery in every phase uses bounded,
 read-only Luna high tasks returning source references and uncertainties. Cross-module
 contracts, conflicting evidence or expanded scope move discovery to Sol medium. Economy,
-auth/session, transactional DB work and cross-language determinism move substantive work
-to Sol high automatically, including SQLite/D1 and Godot/TypeScript. Persistent hard
+auth/session, transactional database operations and cross-language determinism move
+substantive work to Sol high automatically, including rollback, concurrency and idempotency.
+Persistent hard
 problems move to Astra medium, then high, with evidence and reasons. No default extra
 review, max/ultra effort, new phases or weakened gates. See `src/skills/model-routing/SKILL.md`
 for exact model IDs and the runtime contract. Claude semantics remain unchanged.
