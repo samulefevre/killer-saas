@@ -156,7 +156,12 @@ Generated commands and agents load the method-wide `model-routing` skill. Runtim
 select explicit models and reasoning effort: Sol for synthesis/implementation, Terra for
 visual work, Luna for bounded discovery and mechanics, Astra for persistent hard problems.
 Economy, auth/session, DB transactions and cross-language determinism automatically require
-Sol high. No per-project table is needed. A session cannot switch itself through a prompt;
+Sol high. Trivial grep/read lookups and adequate existing evidence stay in the phase worker;
+meaningful bounded multi-read discovery uses Luna high when dispatch overhead is justified.
+Ambiguity or cross-module discovery, ambiguous setup framing/settings, CI-failure diagnosis
+and nonmechanical merge decisions use Sol medium (high when risk requires it). Escalation
+preserves user checkpoints, missing-setting stops and red-check merge blocks.
+No per-project table is needed. A session cannot switch itself through a prompt;
 model overrides use fresh host workers, and missing host support is reported. Interface
 `openai.yaml` files do not select models. Claude agent frontmatter stays unchanged.
 
