@@ -32,6 +32,9 @@ test('Codex generation selects explicit phase/role routes and preserves pipeline
       assert.ok(output.includes(`model \`${model}\`, reasoning_effort \`${effort}\``), name);
       assert.match(output, /fork_turns: "none"/);
       assert.match(output, /model-routing/);
+      assert.match(output, /Trivial grep\/read lookups and reuse of adequate evidence stay in the current phase worker/);
+      assert.match(output, /do not dispatch a discovery agent merely to lower the model tier/);
+      assert.match(output, /Mandatory isolated implementation and fresh review still apply/);
       assert.doesNotMatch(output, /choose an equivalent tier|using your current session model/);
       const kind = name.startsWith('ks-') ? 'commands' : 'agents';
       const body = read(root, 'src', kind, `${name}.md`).split('\n---\n').slice(1).join('\n---\n')
@@ -48,6 +51,20 @@ test('Codex generation selects explicit phase/role routes and preserves pipeline
   }
   const policy = read(path, 'skills/model-routing/SKILL.md');
   assert.equal(policy, read(root, 'src/skills/model-routing/SKILL.md'));
+  const discovery = policy.split('## Targeted research in every project')[1].split('## Automatic risk')[0];
+  assert.match(discovery, /one symbol\/path, one grep\/read, or reuse of adequate existing evidence/);
+  assert.match(discovery, /stays in the current phase worker/);
+  assert.match(discovery, /Delegate meaningful bounded multi-read discovery to Luna high only when isolation or the\nmaterial work justifies dispatch overhead/);
+  assert.match(discovery, /Cross-module contracts, ambiguity, conflicting evidence or expanded scope\nrequire Sol medium/);
+  assert.match(discovery, /strongest risk override still wins/);
+  assert.match(discovery, /source `path:line` references/);
+  const decisions = policy.split('## Setup and ship decisions')[1].split('## Targeted research')[0];
+  assert.match(decisions, /Luna high handles setup\/bootstrap and ship mechanics/);
+  assert.match(decisions, /Ambiguous framing or setup settings,\nCI-failure diagnosis and nonmechanical merge decisions require Sol medium/);
+  assert.match(decisions, /require Sol high when applicable/);
+  assert.match(decisions, /never invents missing settings/);
+  assert.match(decisions, /user-owned choices\/checkpoints or permits merging with red checks/);
+  assert.match(decisions, /fail-closed ship gates/);
   for (const required of ['gpt-6-astra', 'reasoning_effort: medium', 'reasoning_effort: high', 'path:line', 'transactional database behavior', 'cross-language determinism', 'Cross-module contracts', 'conflicting evidence', 'Tightly scoped chores', 'No max/ultra', 'stop that dependent work', 'authorization/tenant scope/security']) {
     assert.ok(policy.includes(required), required);
   }

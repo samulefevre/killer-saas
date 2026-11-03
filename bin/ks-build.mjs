@@ -87,7 +87,7 @@ function codexRoutingPreamble(name, kind) {
   const delegates = ["ks-execute", "ks-review", "ks-stories-review", "ks-orchestrator", "ks-flow", "ks-chore"].includes(name);
   return `> Codex runtime routing: read the installed model-routing skill before work.\n` +
     `> Default for ${name}: model \`${model}\`, reasoning_effort \`${effort}\`. ` +
-    `Apply its risk/chore overrides before selecting a worker.\n` +
+    `Apply its task/risk/chore overrides before selecting a worker.\n` +
     (kind === "command" && delegates
       ? `> Keep the existing coordinator; do not add a wrapper agent. Route each existing delegation ` +
         `with explicit spawn_agent model, reasoning_effort and fork_turns: "none", using the named role's ` +
@@ -104,6 +104,9 @@ function codexRoutingPreamble(name, kind) {
       : `> The invoking command must select this role through explicit spawn_agent model and reasoning_effort, ` +
         `fork_turns: "none", and pass this skill path plus required context. ` +
         `The selected role worker executes the body directly; do not spawn itself again.\n`) +
+    `> Trivial grep/read lookups and reuse of adequate evidence stay in the current phase worker; ` +
+    `do not dispatch a discovery agent merely to lower the model tier. Meaningful bounded multi-read ` +
+    `discovery follows the shared policy. Mandatory isolated implementation and fresh review still apply.\n` +
     `> Agent tool / subagent_type maps to the host spawn_agent mechanism using the named agent skill. ` +
     `Never infer Codex models from Claude frontmatter or inherited sessions. ` +
     `If selection is unavailable, report that limit; prompts and openai.yaml do not change the running model. ` +

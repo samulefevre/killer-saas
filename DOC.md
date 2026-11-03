@@ -306,9 +306,15 @@ is reported and blocks dependent work; neither prompts nor UI metadata switch a 
 
 Defaults: orchestration Sol low; status/bootstrap/ship and scoped chores Luna high;
 PRD/stories/synthesis/plan/flow/ordinary implementation Sol medium; architecture and reviews
-Sol high; visual design Terra medium. Targeted code discovery in every phase uses bounded,
-read-only Luna high tasks returning source references and uncertainties. Cross-module
-contracts, conflicting evidence or expanded scope move discovery to Sol medium. Economy,
+Sol high; visual design Terra medium. Trivial symbol/path grep/read lookups and reuse of
+adequate evidence stay in the phase worker; never dispatch just to lower model tier.
+Meaningful bounded multi-read discovery uses read-only Luna high tasks when isolation or
+material work justifies overhead, returning source references and uncertainties. Cross-module
+contracts, ambiguity, conflicting evidence or expanded scope move discovery to Sol medium.
+Setup/ship mechanics stay Luna high; ambiguous framing/settings, CI-failure diagnosis and
+nonmechanical merge decisions use Sol medium. Risk overrides still win; escalation never
+invents missing settings, replaces user-owned checkpoints or permits a red-check merge.
+Mandatory isolated implementation and fresh review remain unchanged. Economy,
 auth/session, transactional database operations and cross-language determinism move
 substantive work to Sol high automatically, including rollback, concurrency and idempotency.
 Persistent hard

@@ -39,15 +39,29 @@ required model or effort, report the unavailable selection and stop that depende
 do not silently inherit a session model or claim a prompt switched it. `agents/openai.yaml`
 is interface metadata, not a runtime model selector. No Claude opus-to-Codex equivalence.
 
+## Setup and ship decisions
+
+Luna high handles setup/bootstrap and ship mechanics. Ambiguous framing or setup settings,
+CI-failure diagnosis and nonmechanical merge decisions require Sol medium; the risk overrides
+below still require Sol high when applicable. Escalation never invents missing settings,
+replaces user-owned choices/checkpoints or permits merging with red checks. Keep all
+fail-closed ship gates and explicit restrictions.
+
 ## Targeted research in every project
 
-For code discovery needed by any phase, give Luna high a bounded read-only question with
-specific paths/symbols and requested facts. Return source `path:line` references, observed
-behavior, relevant signatures and explicit uncertainties. Do not ask it to decide architecture
-or perform substantive high-risk analysis. The phase's Sol medium worker synthesizes the
-findings and owns conclusions. Cross-module contracts, conflicting evidence or expanded scope
-escalate the discovery to Sol medium with the evidence already found. This is delegation
-within the existing phase, not a new pipeline phase. Reuse adequate existing findings.
+A trivial lookup — one symbol/path, one grep/read, or reuse of adequate existing evidence —
+stays in the current phase worker. Do not create a discovery agent merely to lower the model
+tier. This exception does not bypass mandatory isolated implementation or fresh review.
+
+Delegate meaningful bounded multi-read discovery to Luna high only when isolation or the
+material work justifies dispatch overhead. Give it a read-only question with specific
+paths/symbols; return source `path:line` references, observed behavior, relevant signatures
+and explicit uncertainties. Do not ask it to decide architecture or perform substantive
+high-risk analysis. The phase's Sol medium worker synthesizes the findings and owns
+conclusions. Cross-module contracts, ambiguity, conflicting evidence or expanded scope
+require Sol medium with the evidence already found; the strongest risk override still wins.
+This is delegation within the existing phase, not a new pipeline phase. Reuse adequate
+existing findings.
 
 ## Automatic risk overrides (all projects)
 
