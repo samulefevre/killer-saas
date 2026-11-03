@@ -24,8 +24,9 @@ Actual host runtime model availability and live dispatch were not exercised by f
 Routing is instruction-driven host selection, never an automatic change to the parent model.
 Existing legacy manifests can already claim custom skills; that ownership ambiguity cannot
 be repaired automatically without risking legitimate removals. Inspect before upgrading.
-The coordinating agent owns real Dreadkin worktree installation/comparison, source PR/merge,
-Dreadkin PR/merge and final reinstall. No push/PR/merge was performed by this implementer.
+The coordinating agent owns real downstream worktree installation/comparison, source
+PR/merge, downstream PR/merge and final reinstall. No push/PR/merge was performed by this
+implementer.
 No game suite, application build, E2E or environment provisioning is relevant to this chore.
 No deployment, activation, remote migration or provisioning is authorized (MERGE ONLY).
 

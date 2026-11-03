@@ -54,7 +54,7 @@ within the existing phase, not a new pipeline phase. Reuse adequate existing fin
 Economy/resource/reward mutations, authentication, authorization/tenant scope/security or sessions, database transactions,
 rollback/concurrency/idempotency, and cross-language determinism require **gpt-6.1-sol,
 reasoning_effort: high** for substantive analysis, planning, implementation and review.
-This includes SQLite/D1 transactional behavior and Godot/TypeScript parity without any
+This includes transactional database behavior and cross-language determinism without any
 project-specific policy. Luna may still locate exact source references for a bounded
 read-only question; it does not make the risk decision. Mechanical status/bootstrap/ship
 can remain Luna while any substantive risk work is handed to Sol high. Visual work that

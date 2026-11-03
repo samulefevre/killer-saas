@@ -48,7 +48,7 @@ test('Codex generation selects explicit phase/role routes and preserves pipeline
   }
   const policy = read(path, 'skills/model-routing/SKILL.md');
   assert.equal(policy, read(root, 'src/skills/model-routing/SKILL.md'));
-  for (const required of ['gpt-6-astra', 'reasoning_effort: medium', 'reasoning_effort: high', 'path:line', 'SQLite/D1', 'Godot/TypeScript', 'Cross-module contracts', 'conflicting evidence', 'Tightly scoped chores', 'No max/ultra', 'stop that dependent work', 'authorization/tenant scope/security']) {
+  for (const required of ['gpt-6-astra', 'reasoning_effort: medium', 'reasoning_effort: high', 'path:line', 'transactional database behavior', 'cross-language determinism', 'Cross-module contracts', 'conflicting evidence', 'Tightly scoped chores', 'No max/ultra', 'stop that dependent work', 'authorization/tenant scope/security']) {
     assert.ok(policy.includes(required), required);
   }
 }));
