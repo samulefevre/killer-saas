@@ -7,7 +7,7 @@
 // Targets:
 //   claude  identity: commands/, skills/, agents/ copied as-is (parity with the bash path)
 //   codex   commands -> Codex skills (SKILL.md + agents/openai.yaml), methodology skills
-//           verbatim, agents -> skills with a model note. AGENTS.md is native (handled by install.sh).
+//           verbatim, agents -> skills with explicit Codex delegation routing. AGENTS.md is native (handled by install.sh).
 //
 // The canonical source stays Claude-shaped; only two body macros are rewritten: `@path` file
 // injection (Claude-only) becomes a plain path reference, and `$ARGUMENTS` is kept (Codex-native).
@@ -55,6 +55,61 @@ function isDir(p) { try { return statSync(p).isDirectory(); } catch { return fal
 
 // ---- CODEX EMISSION -------------------------------------------------------
 
+// Runtime selection belongs to the host spawn call, never openai.yaml UI metadata.
+const CODEX_ROUTES = {
+  "ks-orchestrator": ["gpt-6.1-sol", "low"],
+  "ks-help": ["gpt-6-luna", "high"],
+  "ks-status": ["gpt-6-luna", "high"],
+  "ks-setup": ["gpt-6-luna", "high"],
+  "ks-ship": ["gpt-6-luna", "high"],
+  "ks-chore": ["gpt-6-luna", "high"],
+  "ks-test-prune": ["gpt-6.1-sol", "medium"],
+  "ks-prd": ["gpt-6.1-sol", "medium"],
+  "ks-stories": ["gpt-6.1-sol", "medium"],
+  "ks-research": ["gpt-6.1-sol", "medium"],
+  "ks-plan": ["gpt-6.1-sol", "medium"],
+  "ks-flow": ["gpt-6.1-sol", "medium"],
+  "ks-execute": ["gpt-6.1-sol", "medium"],
+  "implementer": ["gpt-6.1-sol", "medium"],
+  "ks-architect": ["gpt-6.1-sol", "high"],
+  "ks-stories-review": ["gpt-6.1-sol", "high"],
+  "stories-reviewer": ["gpt-6.1-sol", "high"],
+  "ks-review": ["gpt-6.1-sol", "high"],
+  "reviewer": ["gpt-6.1-sol", "high"],
+  "ks-design": ["gpt-6.1-terra", "medium"],
+  "ks-design-system": ["gpt-6.1-terra", "medium"],
+};
+
+function codexRoutingPreamble(name, kind) {
+  const route = CODEX_ROUTES[name];
+  if (!route) throw new Error(`Missing explicit Codex route for ${kind} ${name}`);
+  const [model, effort] = route;
+  const delegates = ["ks-execute", "ks-review", "ks-stories-review", "ks-orchestrator", "ks-flow", "ks-chore"].includes(name);
+  return `> Codex runtime routing: read the installed model-routing skill before work.\n` +
+    `> Default for ${name}: model \`${model}\`, reasoning_effort \`${effort}\`. ` +
+    `Apply its risk/chore overrides before selecting a worker.\n` +
+    (kind === "command" && delegates
+      ? `> Keep the existing coordinator; do not add a wrapper agent. Route each existing delegation ` +
+        `with explicit spawn_agent model, reasoning_effort and fork_turns: "none", using the named role's ` +
+        `routing contract and risk overrides. Orchestration dispatches research/design/plan/ship ` +
+        `through their command skills. Any substantive inline work requiring another model is ` +
+        `handed to one scoped worker with the phase evidence, never silently done at the coordinator tier.\n`
+      : kind === "command"
+      ? `> If host-reported current model/effort already matches the required selection, execute directly. ` +
+        `Otherwise dispatch this phase once with explicit spawn_agent model and reasoning_effort, ` +
+        `fork_turns: "none", and the command skill path, absolute workspace, task and evidence in its message. ` +
+        `Mark the message "routed phase worker: ${name}" to prevent recursive phase dispatch. ` +
+        `A worker already dispatched for this phase executes its body directly. ` +
+        `For orchestrated phases, select each phase's route separately.\n`
+      : `> The invoking command must select this role through explicit spawn_agent model and reasoning_effort, ` +
+        `fork_turns: "none", and pass this skill path plus required context. ` +
+        `The selected role worker executes the body directly; do not spawn itself again.\n`) +
+    `> Agent tool / subagent_type maps to the host spawn_agent mechanism using the named agent skill. ` +
+    `Never infer Codex models from Claude frontmatter or inherited sessions. ` +
+    `If selection is unavailable, report that limit; prompts and openai.yaml do not change the running model. ` +
+    `Read-only restrictions and all existing pipeline gates still apply.\n\n`;
+}
+
 function codexSkillFromCommand(name, text, outSkillsDir) {
   const { fm, body } = splitFrontmatter(text);
   const description = fmScalar(fm, "description") || `killer-saas command ${name}`;
@@ -64,10 +119,7 @@ function codexSkillFromCommand(name, text, outSkillsDir) {
 
   // SKILL.md: open-standard frontmatter (name + description) + transformed body.
   const skillFm = `---\nname: ${name}\ndescription: ${description}\n---\n`;
-  const preamble =
-    `> killer-saas command, emitted for Codex. Run it explicitly. ` +
-    `Delegation ("the Agent tool" / "subagent_type: X") maps to your Codex subagent ` +
-    `mechanism (/agent) using the X skill; file/grep gates and the git hooks are unchanged.\n\n`;
+  const preamble = codexRoutingPreamble(name, "command");
   writeFileSync(join(skillDir, "SKILL.md"), skillFm + preamble + derefInjections(body));
 
   // agents/openai.yaml: the /ks-* interface.
@@ -85,17 +137,9 @@ function codexSkillFromCommand(name, text, outSkillsDir) {
 function codexSkillFromAgent(name, text, outSkillsDir) {
   const { fm, body } = splitFrontmatter(text);
   const description = fmScalar(fm, "description") || `killer-saas ${name}`;
-  const model = fmScalar(fm, "model");
   const skillDir = join(outSkillsDir, name);
   ensureDir(skillDir);
-  const modelNote = !model
-    ? ""
-    : model === "inherit"
-      ? `> Run this in an isolated subagent, using your current session model. ` +
-        `Read-only / tool restrictions are advisory here — the git hooks hold the gate.\n\n`
-      : `> Run this in an isolated subagent. On Claude this pins model \`${model}\`; ` +
-        `on Codex choose an equivalent tier. ` +
-        `Read-only / tool restrictions are advisory here — the git hooks hold the gate.\n\n`;
+  const modelNote = codexRoutingPreamble(name, "agent");
   const skillFm = `---\nname: ${name}\ndescription: ${description}\n---\n`;
   writeFileSync(join(skillDir, "SKILL.md"), skillFm + modelNote + derefInjections(body));
 }

@@ -34,23 +34,23 @@ root (the script fetches the repo itself).
 **Claude Code:**
 
     cd your-project
-    curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh | bash
 
 **Codex:**
 
     cd your-project
-    curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh | bash -s -- --target codex
+    curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh | bash -s -- --target codex
 
 To install the Codex skills globally instead:
 
-    curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh | bash -s -- --global --target codex
+    curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh | bash -s -- --global --target codex
 
 The Codex target requires Node.js and installs the skills in `.codex/skills`
 for a project install or `~/.codex/skills` for a global install.
 
 Prefer to read before you run? Clone the repo somewhere, then run the script from your project's root:
 
-    git clone https://github.com/MikeCodeur/killer-saas.git ~/tools/killer-saas
+    git clone https://github.com/samulefevre/killer-saas.git ~/tools/killer-saas
     cd your-project
     ~/tools/killer-saas/install.sh
 
@@ -96,9 +96,9 @@ From your project's root:
     ~/tools/killer-saas/install.sh update              # Claude
     ~/tools/killer-saas/install.sh update --target codex   # Codex
     # or, without a clone:
-    curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh | bash -s -- update
+    curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh | bash -s -- update
     # overwrite locally modified templates too:
-    curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh | bash -s -- update --force
+    curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh | bash -s -- update --force
 
 What it does — and doesn't:
 - Cleanly replaces the method's tooling, tracked per target in `.ks-manifest` (`.claude/` or `.codex/` — your own commands/skills are never touched, renamed or removed files leave no ghosts).
@@ -149,3 +149,17 @@ What it does — and doesn't:
     the user stories (find the best sequence).
 
 It reads `docs/stories.md`, respects the dependency order, and fans out `/ks-research → … → /ks-review` across independent stories in parallel — while the method's gates still hold: no execution without a validated plan, no ship past an open critical. Use it to go wide once the framing (PRD, stories, architecture, design system) is done; use the individual `/ks-*` commands when you want to drive one story by hand.
+
+### Codex model selection
+
+Generated commands and agents load the method-wide `model-routing` skill. Runtime delegates
+select explicit models and reasoning effort: Sol for synthesis/implementation, Terra for
+visual work, Luna for bounded discovery and mechanics, Astra for persistent hard problems.
+Economy, auth/session, DB transactions and cross-language determinism automatically require
+Sol high. No per-project table is needed. A session cannot switch itself through a prompt;
+model overrides use fresh host workers, and missing host support is reported. Interface
+`openai.yaml` files do not select models. Claude agent frontmatter stays unchanged.
+
+Reinstall from this fork to receive routing; the installer owns only the generated skills,
+leaving project settings and unrelated Codex files intact. The upstream reference is
+[MikeCodeur/killer-saas](https://github.com/MikeCodeur/killer-saas).
