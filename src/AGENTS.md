@@ -56,6 +56,15 @@ existing test, or a look at the screen.
 checked out → stop and ask; never switch automatically. Another agent owning the directory →
 coordinate or stop; never overlap edits.
 
+## Codex model routing
+
+On Codex, apply the installed `model-routing` skill and the generated command/agent routing
+instructions at every delegation. This is a method-wide default with automatic risk
+escalation, not a project setting. A prompt never changes the current session model;
+select model and reasoning effort through the host's real delegation parameters or report
+that selection is unavailable. Keep the existing phases, workspace ownership and gates.
+Claude continues to use its own agent frontmatter and invocation semantics.
+
 ## Pipeline (commands)
 
 Framing, once per product: `/ks-setup` (settings, first) → `/ks-prd` → `/ks-stories` →

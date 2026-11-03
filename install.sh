@@ -18,9 +18,9 @@ set -euo pipefail
 #
 # Deux portées, pour chaque cible : projet (dans le repo courant) ou global (--global).
 #
-# curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh | bash
+# curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh | bash
 
-REPO="https://github.com/MikeCodeur/killer-saas.git"
+REPO="https://github.com/samulefevre/killer-saas.git"
 
 # --- Résolution du payload (src/) : fichiers locaux, sinon clone (cas curl|bash) ---
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || true)"
@@ -89,7 +89,7 @@ copy_tooling_codex() {
   mkdir -p "$dest"
   cp -R "$stg/." "$dest/"
   : > "$dest/.ks-manifest"
-  for d in "$dest/skills/"*/; do echo "skills/$(basename "$d")" >> "$dest/.ks-manifest"; done
+  for d in "$stg/skills/"*/; do echo "skills/$(basename "$d")" >> "$dest/.ks-manifest"; done
   echo "$VERSION" > "$dest/.ks-version"
   rm -rf "$stg"
 }

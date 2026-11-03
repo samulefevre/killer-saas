@@ -195,7 +195,7 @@ Five building blocks:
 
 Workspace creation is deliberately **not** a subagent of the method: the method says the work happens in `.worktrees/<id>` on `feature/<id>` and lets the environment's own tooling build it.
 
-Model policy: the reviewers use `model: inherit` — the review runs with whatever model your session runs. Nothing silently downgrades, and the method doesn't assume you have a specific tier. The implementer is pinned to `opus`: implementing a full story is the longest, most demanding run of the cycle, and a cheaper tier costs more in round-trips than it saves per token. Change either in `src/agents/*.md`.
+Claude model policy: the reviewers use `model: inherit` — the review runs with whatever model your session runs. Nothing silently downgrades, and the method doesn't assume you have a specific tier. The implementer is pinned to `opus`: implementing a full story is the longest, most demanding run of the cycle, and a cheaper tier costs more in round-trips than it saves per token. Change either in `src/agents/*.md`.
 
 ### The skills
 
@@ -260,7 +260,7 @@ The installer always targets the directory you run it from — your project's ro
 
 | Mode | From your project's root | Effect |
 | --- | --- | --- |
-| Project (default) | `curl -fsSL https://raw.githubusercontent.com/MikeCodeur/killer-saas/main/install.sh \| bash` — or `<clone>/install.sh` | `.claude/` + `templates/` + `AGENTS.md`/`CLAUDE.md` in the current project |
+| Project (default) | `curl -fsSL https://raw.githubusercontent.com/samulefevre/killer-saas/main/install.sh \| bash` — or `<clone>/install.sh` | `.claude/` + `templates/` + `AGENTS.md`/`CLAUDE.md` in the current project |
 | Global | `<clone>/install.sh --global` | Tooling in `~/.claude` (commands everywhere), payload in `~/.claude/killer-saas` |
 | Per project, after global | `~/.claude/killer-saas/install.sh init` | Drops templates + rules in the current project |
 | Update | `<clone>/install.sh update` — or the one-liner with `-s -- update` | Cleanly replaces the method's tooling (manifest-tracked, no ghosts, your own commands untouched), refreshes unmodified templates (modified ones are warned about, never overwritten — add `--force` to overwrite them too), stamps `.claude/.ks-version` |
@@ -281,7 +281,7 @@ One canonical source (`src/`, Claude-shaped, the richest target), one installer,
 | Commands (`ks-*`) | `.claude/commands/*.md` | emitted as `.codex/skills/*` |
 | File/grep gates (`validated:`, `Ship allowed:`, `Tree:`) | ✅ | ✅ |
 | "No direct coding" via tool permissions | ✅ mechanical | ~ agent sandbox (coarser) |
-| Subagent model routing | ✅ | note only |
+| Subagent model routing | canonical frontmatter | explicit host model + reasoning_effort (host support required) |
 | `AskUserQuestion` checkpoints | ✅ structured | prose |
 
 **The honest line:** the file-based gates port to every tool because they are shell-on-markdown, not tool permissions. The permission and isolation guarantees are Claude-mechanical and degrade elsewhere. Rather than pretend otherwise, killer-saas moves enforcement into the **repo**.
@@ -293,3 +293,30 @@ Opt-in git hooks (installed via `core.hooksPath`, reversible with `git config --
 - **pre-commit** — no code on `feature/<id>` without `docs/plans/<id>.md` → `validated: yes` (docs-only commits pass).
 
 So "no code without a validated plan" holds whatever the harness — enforcement lives in the repo, not the tool. There is no push-time hook: `/ks-ship` squash-merges, so a merged story leaves no merge commit to detect client-side. The ship gate belongs server-side — `ks-gate ship-allowed <id>` in CI or branch protection.
+
+### Codex routing contract
+
+`bin/ks-build.mjs` injects explicit runtime selection instructions into every generated
+command and agent skill. `model-routing` contains the shared task table and automatic risk
+rules; this policy requires no `AGENTS.local.md` changes. Existing delegation points select
+workers directly, without wrapper agents. Inline phases use one routed worker only when
+host-reported current model/effort differs. Model overrides use `fork_turns: "none"` with
+explicit document paths, evidence, authorization and ownership. Missing selection support
+is reported and blocks dependent work; neither prompts nor UI metadata switch a session.
+
+Defaults: orchestration Sol low; status/bootstrap/ship and scoped chores Luna high;
+PRD/stories/synthesis/plan/flow/ordinary implementation Sol medium; architecture and reviews
+Sol high; visual design Terra medium. Targeted code discovery in every phase uses bounded,
+read-only Luna high tasks returning source references and uncertainties. Cross-module
+contracts, conflicting evidence or expanded scope move discovery to Sol medium. Economy,
+auth/session, transactional DB work and cross-language determinism move substantive work
+to Sol high automatically, including SQLite/D1 and Godot/TypeScript. Persistent hard
+problems move to Astra medium, then high, with evidence and reasons. No default extra
+review, max/ultra effort, new phases or weakened gates. See `src/skills/model-routing/SKILL.md`
+for exact model IDs and the runtime contract. Claude semantics remain unchanged.
+
+The fork installer fetches `samulefevre/killer-saas`, including from curl or cached-installer
+fallbacks. Codex manifests enumerate generated staging skills only: unrelated pre-existing
+skills must never become installer-owned and disappear on a second update. Existing
+manifests produced by older installers may already include such names; inspect them before
+upgrading and remove mistakenly claimed custom entries from the manifest to preserve them.
